@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoped CSS Variables and JS</title>
+</head>
+<body>
+  <!-- we can also define CSS variables within a HTML tag, so if the there are 2
+  base variables, the base variable at a lower scope will win -->
+  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+
+  <div class="controls">
+    <label for="spacing">Spacing:</label>
+    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+
+    <label for="blur">Blur:</label>
+    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+    <label for="base">Base Color</label>
+    <!-- this input id inserts a color picker to change the background-->
+    <input id="base" type="color" name="base" value="#ffc600">
+  </div>
+
+  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
+
+  <style>
+  /*declaring and defining variables on root element*/
+    /* root represents our entire web document, highest level */
+    :root {
+      --base: #ffc600; /*sets base to yellow*/
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
+    /* we now use variables becuase we defined the variables above */
+    img {
+      padding: var(--spacing);
+      background: var(--base);
+      filter: blur(var(--blur));
+    }
+
+    .hl {
+      color: var(--base);
+    }
+    /*
+      misc styles, nothing to do with CSS variables
+    */
+    body {
+      text-align: center;
+      background: #193549;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 50px;
+    }
+    .controls {
+      margin-bottom: 50px;
+    }
+    input {
+      width:100px;
+    }
+  </style>
+
+  <script>
+  /* selects all input under the controls id */
+  /* this actually gives us an Nodelist, not an array*/
+  /* the diff between array v nodelist is that there are alot more built in methods
+  for arrays than nodelist. To see all available builtin methods go to "inspect console", then click on "__proto__" */
+    const inputs = document.querySelectorAll('.controls input');
+    function handleUpdate() {
+      //dataset is an object that hold all data attributes, ie data-sizing,etc
+      // || " ", means OR NOTHING, for inputs that dont have any data attributes
+      //suffix var holds "px"(pixel) attribute
+      const suffix = this.dataset.sizing || '';
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+    }
+
+    /* when there is a change, i.e. user moves scrollbar, trigger handleUpdate
+    func and print out color value */
+    inputs.forEach(input => input.addEventListener('change', handleUpdate));
+    /* similar to above code, but this event listener constantly changes as user
+    moves scollbar instantaneously */
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+  </script>
+
+
+</body>
+</html>
